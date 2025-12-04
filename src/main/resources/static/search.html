@@ -1,27 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Blinkit Search</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Item Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #aaa;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .no-results {
+            text-align: center;
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
 </head>
 <body>
-<h2>Search Items</h2>
-<input type="text" id="searchInput" placeholder="Search items...">
-<button onclick="search()">Search</button>
-<div id="result"></div>
+    <h1>Search Grocery Items</h1>
+    <div style="text-align:center;">
+        <input type="text" id="searchInput" placeholder="Search by any field...">
+        <button onclick="searchItems()">Search</button>
+    </div>
 
-<script>
-function search() {
-    const q = document.getElementById("searchInput").value;
-    fetch(`/api/items/search?q=${q}`)
-        .then(res => res.json())
-        .then(data => {
-            let html = "";
-            data.forEach(item => {
-                html += `<p><strong>${item.itemIdentifier}</strong> — ${item.itemType} — ${item.itemFatContent} — ${item.outletLocationType} — ${item.outletEstablishmentYear} — ${item.sales}</p><hr>`;
-            });
-            document.getElementById("result").innerHTML = html;
+    <div id="results"></div>
+
+    <script>
+        async function searchItems() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (!query) {
+                resultsDiv.innerHTML = '<p class="no-results">Please enter a search keyword.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/grocery/search?q=${encodeURIComponent(query)}`);
+                const items = await response.json();
+
+                if (items.length === 0) {
+                    resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
+                    return;
+                }
+
+                let tableHtml = `<table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Item Fat Content</th>
+                        <th>Item Identifier</th>
+                        <th>Item Type</th>
+                        <th>Outlet Establishment Year</th>
+                        <th>Outlet Location Type</th>
+                        <th>Sales</th>
+                    </tr>`;
+
+                items.forEach(item => {
+                    tableHtml += `<tr>
+                        <td>${item.id}</td>
+                        <td>${item.itemFatContent}</td>
+                        <td>${item.itemIdentifier}</td>
+                        <td>${item.itemType}</td>
+                        <td>${item.outletEstablishmentYear}</td>
+                        <td>${item.outletLocationType}</td>
+                        <td>${item.sales}</td>
+                    </tr>`;
+                });
+
+                tableHtml += `</table>`;
+                resultsDiv.innerHTML = tableHtml;
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="no-results">Error fetching data: ${error}</p>`;
+                console.error(error);
+            }
+        }
+
+        // Optional: trigger search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchItems();
+            }
         });
-}
-</script>
+    </script>
 </body>
 </html>

@@ -10,81 +10,32 @@ public class GroceryItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String itemFatContent;
+    private String fatContent;
     private String itemIdentifier;
     private String itemType;
-    private Integer outletEstablishmentYear;
-    private String outletLocationType;
+    private Integer outletYear;
     private Double sales;
 
-    // Default constructor
     public GroceryItem() {}
 
-    // Constructor with fields
-    public GroceryItem(String itemFatContent, String itemIdentifier, String itemType,
-                       Integer outletEstablishmentYear, String outletLocationType, Double sales) {
-        this.itemFatContent = itemFatContent;
+    public GroceryItem(String fatContent, String itemIdentifier, String itemType, Integer outletYear, Double sales) {
+        this.fatContent = fatContent;
         this.itemIdentifier = itemIdentifier;
         this.itemType = itemType;
-        this.outletEstablishmentYear = outletEstablishmentYear;
-        this.outletLocationType = outletLocationType;
+        this.outletYear = outletYear;
         this.sales = sales;
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getItemFatContent() {
-        return itemFatContent;
-    }
-
-    public void setItemFatContent(String itemFatContent) {
-        this.itemFatContent = itemFatContent;
-    }
-
-    public String getItemIdentifier() {
-        return itemIdentifier;
-    }
-
-    public void setItemIdentifier(String itemIdentifier) {
-        this.itemIdentifier = itemIdentifier;
-    }
-
-    public String getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
-    }
-
-    public Integer getOutletEstablishmentYear() {
-        return outletEstablishmentYear;
-    }
-
-    public void setOutletEstablishmentYear(Integer outletEstablishmentYear) {
-        this.outletEstablishmentYear = outletEstablishmentYear;
-    }
-
-    public String getOutletLocationType() {
-        return outletLocationType;
-    }
-
-    public void setOutletLocationType(String outletLocationType) {
-        this.outletLocationType = outletLocationType;
-    }
-
-    public Double getSales() {
-        return sales;
-    }
-
-    public void setSales(Double sales) {
-        this.sales = sales;
-    }
+    public Long getId() { return id; }
+    public String getFatContent() { return fatContent; }
+    public void setFatContent(String fatContent) { this.fatContent = fatContent; }
+    public String getItemIdentifier() { return itemIdentifier; }
+    public void setItemIdentifier(String itemIdentifier) { this.itemIdentifier = itemIdentifier; }
+    public String getItemType() { return itemType; }
+    public void setItemType(String itemType) { this.itemType = itemType; }
+    public Integer getOutletYear() { return outletYear; }
+    public void setOutletYear(Integer outletYear) { this.outletYear = outletYear; }
+    public Double getSales() { return sales; }
+    public void setSales(Double sales) { this.sales = sales; }
 }

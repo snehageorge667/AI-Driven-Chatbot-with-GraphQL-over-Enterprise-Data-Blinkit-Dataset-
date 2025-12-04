@@ -1,59 +1,61 @@
 package com.example.blinkit.config;
 
+
 import com.example.blinkit.entity.GroceryItem;
-import com.example.blinkit.repository.GroceryRepository;
-import jakarta.annotation.PostConstruct;
+import com.example.blinkit.service.GroceryItemService;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
-public class DataLoader {
+public class DataLoader implements CommandLineRunner {
 
-    private final GroceryRepository repository;
+    private final GroceryItemService service;
 
-    public DataLoader(GroceryRepository repository) {
-        this.repository = repository;
+    public DataLoader(GroceryItemService service) {
+        this.service = service;
     }
 
-    @PostConstruct
-    public void loadCSV() {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("groceries.csv")),
-                        StandardCharsets.UTF_8))) {
+    @Override
+    public void run(String... args) throws Exception {
+        List<GroceryItem> items = new ArrayList<>();
 
-            String line;
-            boolean firstLine = true;
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+                new ClassPathResource("blinkit_products.csv").getInputStream(), StandardCharsets.UTF_8));
 
-            while ((line = reader.readLine()) != null) {
-                if (firstLine) { // skip header
-                    firstLine = false;
-                    continue;
-                }
+        String line;
+        boolean firstLine = true;
+        while ((line = br.readLine()) != null) {
+            if (firstLine) { firstLine = false; continue; } // skip header
 
-                String[] values = line.split(",");
+            String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); // split CSV correctly
 
-                if (values.length < 6) continue; // skip invalid lines
+            String fatContent = parts[0].replace("\"", "").trim();
+            String itemIdentifier = parts[1].replace("\"", "").trim();
+            String itemType = parts[2].replace("\"", "").trim();
+            Integer outletYear = safeInt(parts, 3);
+            Double sales = safeDouble(parts, 10);
 
-                GroceryItem item = new GroceryItem();
-                item.setItemFatContent(values[0].trim());
-                item.setItemIdentifier(values[1].trim());
-                item.setItemType(values[2].trim());
-                item.setOutletEstablishmentYear(Integer.parseInt(values[3].trim()));
-                item.setOutletLocationType(values[4].trim());
-                item.setSales(Double.parseDouble(values[5].trim()));
-
-                repository.save(item);
-            }
-
-            System.out.println("CSV data loaded successfully.");
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            items.add(new GroceryItem(fatContent, itemIdentifier, itemType, outletYear, sales));
         }
+
+        service.saveAll(items);
+        System.out.println("Loaded " + items.size() + " items.");
+    }
+
+    private Integer safeInt(String[] parts, int index) {
+        try { return Integer.parseInt(parts[index].replace("\"", "").trim()); }
+        catch (Exception e) { return null; }
+    }
+
+    private Double safeDouble(String[] parts, int index) {
+        try { return Double.parseDouble(parts[index].replace("\"", "").trim()); }
+        catch (Exception e) { return null; }
     }
 }
