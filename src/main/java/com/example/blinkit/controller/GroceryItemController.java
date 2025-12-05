@@ -16,13 +16,22 @@ public class GroceryItemController {
         this.service = service;
     }
 
+    // GET full list (default 100)
     @GetMapping
-    public List<GroceryItem> getAll() {
-        return service.getAllItems();
+    public List<GroceryItem> getAll(@RequestParam(defaultValue = "100") int limit) {
+        return service.getLimitedItems(limit);
     }
 
+    // GET with explicit limit
+    @GetMapping("/limit")
+    public List<GroceryItem> getLimited(@RequestParam(defaultValue = "10") int limit) {
+        return service.getLimitedItems(limit);
+    }
+
+    // Search endpoint for free API
     @GetMapping("/search")
-    public List<GroceryItem> search(@RequestParam String keyword) {
-        return service.searchItems(keyword);
+    public List<GroceryItem> search(@RequestParam String keyword,
+                                    @RequestParam(defaultValue = "20") int limit) {
+        return service.search(keyword, limit);
     }
 }

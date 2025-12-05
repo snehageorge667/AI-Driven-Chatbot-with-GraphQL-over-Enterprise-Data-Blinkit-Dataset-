@@ -1,6 +1,5 @@
 package com.example.blinkit.config;
 
-
 import com.example.blinkit.entity.GroceryItem;
 import com.example.blinkit.service.GroceryItemService;
 import org.springframework.boot.CommandLineRunner;
@@ -24,38 +23,71 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        // Avoid duplicate loading
+        if (service.countItems() > 0) {
+            System.out.println("Data already loaded. Skipping CSV import.");
+            return;
+        }
+
         List<GroceryItem> items = new ArrayList<>();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(
-                new ClassPathResource("blinkit_products.csv").getInputStream(), StandardCharsets.UTF_8));
+                new ClassPathResource("blinkit_products.csv").getInputStream(),
+                StandardCharsets.UTF_8
+        ));
 
         String line;
         boolean firstLine = true;
+
         while ((line = br.readLine()) != null) {
-            if (firstLine) { firstLine = false; continue; } // skip header
 
-            String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); // split CSV correctly
+            if (firstLine) { 
+                firstLine = false; 
+                continue; 
+            }
 
-            String fatContent = parts[0].replace("\"", "").trim();
-            String itemIdentifier = parts[1].replace("\"", "").trim();
-            String itemType = parts[2].replace("\"", "").trim();
-            Integer outletYear = safeInt(parts, 3);
-            Double sales = safeDouble(parts, 10);
+            String[] parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
-            items.add(new GroceryItem(fatContent, itemIdentifier, itemType, outletYear, sales));
+            String fatContent = clean(parts[0]);
+            String itemIdentifier = clean(parts[1]);
+            String itemType = clean(parts[2]);
+            Integer outletYear = parseInt(parts[3]);
+            Double sales = parseDouble(parts[10]);
+
+            GroceryItem item = new GroceryItem(
+                    fatContent,
+                    itemIdentifier,
+                    itemType,
+                    outletYear,
+                    sales
+            );
+
+            items.add(item);
         }
 
         service.saveAll(items);
-        System.out.println("Loaded " + items.size() + " items.");
+
+        System.out.println("CSV Imported → " + items.size() + " grocery items loaded into PostgreSQL.");
     }
 
-    private Integer safeInt(String[] parts, int index) {
-        try { return Integer.parseInt(parts[index].replace("\"", "").trim()); }
-        catch (Exception e) { return null; }
+    private String clean(String s) {
+        return s.replace("\"", "").trim();
     }
 
-    private Double safeDouble(String[] parts, int index) {
-        try { return Double.parseDouble(parts[index].replace("\"", "").trim()); }
-        catch (Exception e) { return null; }
+    private Integer parseInt(String s) {
+        try {
+            return Integer.parseInt(clean(s));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Double parseDouble(String s) {
+        try {
+            return Double.parseDouble(clean(s));
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

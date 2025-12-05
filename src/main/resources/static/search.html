@@ -1,115 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grocery Item Search</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
-        h1 {
-            text-align: center;
-        }
-        input[type="text"] {
-            width: 300px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #aaa;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        .no-results {
-            text-align: center;
-            margin-top: 20px;
-            color: red;
-        }
-    </style>
+    <title>Blinkit Search</title>
 </head>
 <body>
-    <h1>Search Grocery Items</h1>
-    <div style="text-align:center;">
-        <input type="text" id="searchInput" placeholder="Search by any field...">
-        <button onclick="searchItems()">Search</button>
-    </div>
+<h2>Search Grocery Items</h2>
 
-    <div id="results"></div>
+<input type="text" id="keyword" placeholder="Enter item name">
+<input type="number" id="limit" placeholder="Limit" value="10">
+<button onclick="search()">Search</button>
 
-    <script>
-        async function searchItems() {
-            const query = document.getElementById('searchInput').value.trim();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
+<pre id="result"></pre>
 
-            if (!query) {
-                resultsDiv.innerHTML = '<p class="no-results">Please enter a search keyword.</p>';
-                return;
-            }
+<script>
+function search() {
+    const keyword = document.getElementById("keyword").value;
+    const limit = document.getElementById("limit").value;
 
-            try {
-                const response = await fetch(`/api/grocery/search?q=${encodeURIComponent(query)}`);
-                const items = await response.json();
+    fetch(`/api/items/search?keyword=${keyword}&limit=${limit}`)
+        .then(r => r.json())
+        .then(data => document.getElementById("result").textContent = JSON.stringify(data, null, 2))
+        .catch(err => alert("Error: " + err));
+}
+</script>
 
-                if (items.length === 0) {
-                    resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
-                    return;
-                }
-
-                let tableHtml = `<table>
-                    <tr>
-                        <th>ID</th>
-                        <th>Item Fat Content</th>
-                        <th>Item Identifier</th>
-                        <th>Item Type</th>
-                        <th>Outlet Establishment Year</th>
-                        <th>Outlet Location Type</th>
-                        <th>Sales</th>
-                    </tr>`;
-
-                items.forEach(item => {
-                    tableHtml += `<tr>
-                        <td>${item.id}</td>
-                        <td>${item.itemFatContent}</td>
-                        <td>${item.itemIdentifier}</td>
-                        <td>${item.itemType}</td>
-                        <td>${item.outletEstablishmentYear}</td>
-                        <td>${item.outletLocationType}</td>
-                        <td>${item.sales}</td>
-                    </tr>`;
-                });
-
-                tableHtml += `</table>`;
-                resultsDiv.innerHTML = tableHtml;
-
-            } catch (error) {
-                resultsDiv.innerHTML = `<p class="no-results">Error fetching data: ${error}</p>`;
-                console.error(error);
-            }
-        }
-
-        // Optional: trigger search on Enter key
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchItems();
-            }
-        });
-    </script>
 </body>
 </html>
