@@ -1,11 +1,7 @@
-name,description,category,price
-Apple,Fresh red apples,Fruits,120.50
-Banana,Yellow ripe bananas,Fruits,60.00
-Milk,1 litre full cream milk,Dairy,55.75
-Bread,Whole wheat bread,Bakery,40.25
-Eggs,Pack of 12 eggs,Poultry,70.00
-Rice,Basmati rice 5kg,Grains,450.00
-Tomato,Fresh tomatoes,Vegetables,35.00
-Potato,Organic potatoes,Vegetables,30.00
-Cheese,Cheddar cheese block,Dairy,250.00
-Chicken,Boneless chicken 1kg,Meat,320.00
+product_name,category,price,rating
+Apple,Fruits and Vegetables,120,4.5
+Banana,Fruits and Vegetables,60,4.2
+Milk,Dairy,55,4.1
+Chicken,Meat,280,4.3
+Cola,Soft Drinks,45,4.0
+

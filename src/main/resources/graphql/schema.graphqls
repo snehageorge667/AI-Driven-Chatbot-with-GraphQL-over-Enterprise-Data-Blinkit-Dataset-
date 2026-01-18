@@ -1,0 +1,10 @@
+type Product {
+  productName: String
+  category: String
+  price: Float
+  rating: Float
+}
+
+type Query {
+  productsByCategory(category: String!): [Product]
+}
