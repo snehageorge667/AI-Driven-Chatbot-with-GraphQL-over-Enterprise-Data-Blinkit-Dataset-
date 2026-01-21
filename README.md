@@ -1,16 +1,31 @@
 # blinkit-springboot
-A Spring Boot RESTful API for managing grocery items with CRUD operations, CSV import, and search functionality. Built using a layered architecture (Controller, Service, Repository) with Spring Data JPA and H2 database. Ideal as a starter template for backend services.
+A Spring Boot GraphQL chatbot application that answers user queries using a Blinkit grocery dataset and a local Large Language Model (LLM).
+The system follows a dataset-first approach, using structured data for factual queries and a local LLM (Ollama) as a fallback for explanatory questions.
+Built with a clean layered architecture and GraphQL-only interaction
 
 Features
 
-CRUD Operations: Create, Read, Update, Delete grocery items.
+GraphQL Chat Interface
 
-CSV Import: Bulk import grocery data from a CSV file.
+Dataset-First Query Resolution
 
-Search API: Search grocery items by name, category, or description.
+Local LLM Integration
 
-Validation: Input validation for creating/updating items.
+Intent-Based Routing
+Automatically decides whether a query should be answered from the dataset or the LLM.
 
-In-Memory Database: Uses H2 for easy setup and testing.
+Lightweight Chatbot UI
+Simple HTML + JavaScript frontend that communicates only via GraphQL.
 
-Gradle Build: Simplified dependency management with Gradle.
+
+Tech Stack
+
+Backend: Java 21, Spring Boot 3, Spring GraphQL
+
+Database: PostgreSQL
+
+LLM: Ollama (phi3:mini, local inference)
+
+Frontend: HTML, CSS, JavaScript
+
+Build Tool: Gradle
