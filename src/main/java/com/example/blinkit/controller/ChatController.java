@@ -1,35 +1,20 @@
 package com.example.blinkit.controller;
 
-import com.example.blinkit.dto.ChatRequest;
 import com.example.blinkit.dto.ChatResponse;
 import com.example.blinkit.service.GraphQLService;
-import com.example.blinkit.service.IntentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/chat")
+@Controller
 public class ChatController {
 
-    private final IntentService intentService;
-    private final GraphQLService graphQLService;
+    @Autowired
+    private GraphQLService graphQLService;
 
-    public ChatController(IntentService intentService,
-                          GraphQLService graphQLService) {
-        this.intentService = intentService;
-        this.graphQLService = graphQLService;
-    }
-
-    @PostMapping
-    public ChatResponse chat(@RequestBody ChatRequest request) {
-
-        String category = intentService.extractCategory(request.getMessage());
-
-        Object data = graphQLService.fetchProductsByCategory(category);
-
-        return new ChatResponse(
-                "Here are products from category: " + category,
-                data
-        );
+    @QueryMapping
+    public ChatResponse chat(@Argument String message) {
+        return graphQLService.handleChat(message);
     }
 }

@@ -1,35 +1,44 @@
 package com.example.blinkit.service;
 
+import com.example.blinkit.dto.ChatResponse;
+import com.example.blinkit.llm.OllamaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Map;
 
 @Service
 public class GraphQLService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private GroceryItemService groceryItemService;
 
-    public Object fetchProductsByCategory(String category) {
+    @Autowired
+    private OllamaService ollamaService;
 
-        String query = """
-        {
-          productsByCategory(category: "%s") {
-            productName
-            price
-            rating
-          }
+    /**
+     * Dataset-first, LLM fallback
+     */
+    public ChatResponse handleChat(String message) {
+
+        if (message == null || message.trim().isEmpty()) {
+            return new ChatResponse("Please enter a valid question.", "system");
         }
-        """.formatted(category);
 
-        Map<String, Object> request = Map.of("query", query);
+        // 1️⃣ DATASET FIRST
+        String datasetAnswer = groceryItemService.searchFromDataset(message);
 
-        Map<?, ?> response = restTemplate.postForObject(
-                "http://localhost:8080/graphql",
-                request,
-                Map.class
-        );
+        if (datasetAnswer != null) {
+            return new ChatResponse(datasetAnswer, "dataset");
+        }
 
-        return response.get("data");
+        // 2️⃣ LLM FALLBACK
+        try {
+            String llmAnswer = ollamaService.askOllama(message);
+            return new ChatResponse(llmAnswer, "llm");
+        } catch (Exception e) {
+            return new ChatResponse(
+                    "LLM is currently unavailable.",
+                    "error"
+            );
+        }
     }
 }

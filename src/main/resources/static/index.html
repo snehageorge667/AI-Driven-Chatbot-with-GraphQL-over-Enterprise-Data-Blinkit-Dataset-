@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Blinkit Chatbot</title>
+  <title>Blinkit GraphQL Chatbot</title>
+
   <style>
-    /* SAME CSS — unchanged */
     #chat-bubble {
       position: fixed;
       bottom: 20px;
@@ -85,6 +85,7 @@
       flex: 1;
       padding: 10px;
       border: none;
+      outline: none;
     }
 
     #chat-input button {
@@ -97,16 +98,19 @@
     }
   </style>
 </head>
+
 <body>
 
 <div id="chat-bubble">💬</div>
 
 <div id="chat-box">
   <div id="chat-header">
-    Blinkit Chatbot
+    Blinkit GraphQL Chatbot
     <button id="close-chat">X</button>
   </div>
+
   <div id="chat-messages"></div>
+
   <div id="chat-input">
     <input id="message-input" placeholder="Ask about Blinkit data..." />
     <button id="send-msg">➤</button>
@@ -138,20 +142,57 @@
     messages.innerHTML += `<div class="message user">${text}</div>`;
     input.value = "";
 
-    const res = await fetch("/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
-    });
+    try {
+      const response = await fetch("/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          query: `
+            query Chat($msg: String!) {
+              chat(message: $msg) {
+                answer
+                source
+              }
+            }
+          `,
+          variables: {
+            msg: text
+          }
+        })
+      });
 
-    const data = await res.json();
+      const json = await response.json();
 
-    messages.innerHTML += `
-      <div class="message assistant">
-${JSON.stringify(data, null, 2)}
-      </div>
-    `;
-    messages.scrollTop = messages.scrollHeight;
+      if (json.errors) {
+        messages.innerHTML += `
+          <div class="message assistant">
+Error occurred while processing request
+          </div>
+        `;
+        return;
+      }
+
+      const reply = json.data.chat;
+
+      messages.innerHTML += `
+        <div class="message assistant">
+${reply.answer}
+
+(Source: ${reply.source})
+        </div>
+      `;
+
+      messages.scrollTop = messages.scrollHeight;
+
+    } catch (err) {
+      messages.innerHTML += `
+        <div class="message assistant">
+Network or server error
+        </div>
+      `;
+    }
   }
 
   sendBtn.onclick = sendMessage;

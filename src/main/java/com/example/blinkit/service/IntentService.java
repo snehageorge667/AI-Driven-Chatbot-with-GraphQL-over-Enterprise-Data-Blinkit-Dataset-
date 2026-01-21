@@ -5,19 +5,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class IntentService {
 
-    public String extractCategory(String message) {
-        String lower = message.toLowerCase();
+    public boolean isDatasetQuery(String message) {
+        String msg = message.toLowerCase();
 
-        if (lower.contains("fruit")) {
-            return "Fruits and Vegetables";
-        }
-        if (lower.contains("drink")) {
-            return "Soft Drinks";
-        }
-        if (lower.contains("frozen")) {
-            return "Frozen Foods";
-        }
-
-        return "Fruits and Vegetables"; // safe default
+        return msg.contains("price")
+                || msg.contains("cost")
+                || msg.contains("available")
+                || msg.contains("stock")
+                || msg.contains("apple")
+                || msg.contains("banana")
+                || msg.contains("milk");
     }
 }

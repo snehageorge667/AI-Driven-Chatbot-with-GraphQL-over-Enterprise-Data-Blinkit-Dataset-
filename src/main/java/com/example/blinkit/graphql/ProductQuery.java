@@ -19,6 +19,7 @@ public class ProductQuery {
 
     @QueryMapping
     public List<Product> productsByCategory(@Argument String category) {
-        return repository.findByCategory(category);
+        return repository.findByCategoryContainingIgnoreCase(category);
+
     }
 }

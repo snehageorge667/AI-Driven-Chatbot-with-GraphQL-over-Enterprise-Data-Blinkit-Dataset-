@@ -1,19 +1,20 @@
 package com.example.blinkit.dto;
 
 public class ChatResponse {
-    private String answer;
-    private Object data;
 
-    public ChatResponse(String answer, Object data) {
+    private String answer;
+    private String source;
+
+    public ChatResponse(String answer, String source) {
         this.answer = answer;
-        this.data = data;
+        this.source = source;
     }
 
     public String getAnswer() {
         return answer;
     }
 
-    public Object getData() {
-        return data;
+    public String getSource() {
+        return source;
     }
 }

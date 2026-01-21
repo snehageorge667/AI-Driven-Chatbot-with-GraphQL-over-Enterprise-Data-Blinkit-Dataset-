@@ -14,28 +14,68 @@ public class GroceryItem {
     private String itemIdentifier;
     private String itemType;
     private Integer outletYear;
-    private Double sales;
+
+    // ✅ CHANGED: sales → price
+    private Double price;
 
     public GroceryItem() {}
 
-    public GroceryItem(String fatContent, String itemIdentifier, String itemType, Integer outletYear, Double sales) {
+    public GroceryItem(
+            String fatContent,
+            String itemIdentifier,
+            String itemType,
+            Integer outletYear,
+            Double price
+    ) {
         this.fatContent = fatContent;
         this.itemIdentifier = itemIdentifier;
         this.itemType = itemType;
         this.outletYear = outletYear;
-        this.sales = sales;
+        this.price = price;
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public String getFatContent() { return fatContent; }
-    public void setFatContent(String fatContent) { this.fatContent = fatContent; }
-    public String getItemIdentifier() { return itemIdentifier; }
-    public void setItemIdentifier(String itemIdentifier) { this.itemIdentifier = itemIdentifier; }
-    public String getItemType() { return itemType; }
-    public void setItemType(String itemType) { this.itemType = itemType; }
-    public Integer getOutletYear() { return outletYear; }
-    public void setOutletYear(Integer outletYear) { this.outletYear = outletYear; }
-    public Double getSales() { return sales; }
-    public void setSales(Double sales) { this.sales = sales; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getFatContent() {
+        return fatContent;
+    }
+
+    public void setFatContent(String fatContent) {
+        this.fatContent = fatContent;
+    }
+
+    public String getItemIdentifier() {
+        return itemIdentifier;
+    }
+
+    public void setItemIdentifier(String itemIdentifier) {
+        this.itemIdentifier = itemIdentifier;
+    }
+
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
+    public Integer getOutletYear() {
+        return outletYear;
+    }
+
+    public void setOutletYear(Integer outletYear) {
+        this.outletYear = outletYear;
+    }
+
+    // ✅ REQUIRED by your service
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }
